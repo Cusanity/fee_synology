@@ -5,7 +5,7 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "postbuild": "mkdir -p ./docs/php && cp ./src/php/* ./docs/php/",
+    "postbuild": "Powershell.exe -File C:/Users/wyc93/Desktop/fun_code/vue3-demo/postbuildWin.ps1",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
