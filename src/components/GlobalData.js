@@ -70,12 +70,9 @@ function getData(url, dict) {
         dict[obj.year][obj.month - 1] = obj.amount
     }
 }
-getData('https://cusanity.direct.quickconnect.to:9902/php/water.php', waterDict)
-getData('https://cusanity.direct.quickconnect.to:9902/php/gas.php', gasDict)
-getData(
-    'https://cusanity.direct.quickconnect.to:9902/php/electricity.php',
-    electricityDict
-)
+getData('http://fee.yanchao.me/php/water.php', waterDict)
+getData('http://fee.yanchao.me/php/gas.php', gasDict)
+getData('http://fee.yanchao.me/php/electricity.php', electricityDict)
 const currYear = 2022
 const monthRange = []
 const monthDisplayNum = 9
@@ -91,7 +88,6 @@ for (let i = 0; i < monthDisplayNum; i++) {
 const waterData = getDataFromDict(waterDict)
 const electricityData = getDataFromDict(electricityDict)
 const gasData = getDataFromDict(gasDict)
-console.log(gasData)
 export default {
     monthRange,
     waterData,
