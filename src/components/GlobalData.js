@@ -73,7 +73,7 @@ function getData(url, dict) {
 getData('http://fee.yanchao.me/php/water.php', waterDict)
 getData('http://fee.yanchao.me/php/gas.php', gasDict)
 getData('http://fee.yanchao.me/php/electricity.php', electricityDict)
-const currYear = 2022
+const currYear = new Date().getFullYear()
 const monthRange = []
 const monthDisplayNum = 9
 const latestMonth = getLatestMonthIdx() + 1
