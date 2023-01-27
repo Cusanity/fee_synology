@@ -1,61 +1,31 @@
 import $ from 'jquery'
 
-function getDataFromDict(dict) {
-    let currCount = 0
-    let tempYear = currYear
-    const res = []
-    while (currCount < monthDisplayNum) {
-        const currMonth =
-            latestMonth - currCount > 0
-                ? latestMonth - currCount
-                : 12 - (Math.abs(latestMonth - currCount) % 12)
-        res.unshift(dict[tempYear][(currMonth - 1) % 12])
-        if (currMonth == 1) tempYear--
-        currCount++
-    }
-    return res
-}
-
-function getLatestMonthIdx() {
-    for (let i = 11; i >= 0; i--) {
-        if (
-            waterDict[currYear][i] ^
-            electricityDict[currYear][i] ^
-            (gasDict[currYear][i] !== 0)
-        )
-            return i
-    }
-    return 12
-}
-// const waterDict = {
-//     2021: [0, 0, 0, 0, 0, 0, 0, 0, 0, 150, 150, 150],
-//     2022: [198, 198, 198, 170, 170, 170, 0, 0, 0, 0, 0, 0],
-// }
-// const electricityDict = {
-//     2021: [0, 0, 0, 0, 0, 0, 0, 0, 0, 65, 115, 118],
-//     2022: [158, 171, 148, 120, 120, 186, 214, 296, 0, 0, 0, 0],
-// }
-// const gasDict = {
-//     2021: [0, 0, 0, 0, 0, 0, 0, 0, 0, 80, 189, 304],
-//     2022: [407, 373, 316, 253, 139, 112, 113, 103, 0, 0, 0, 0],
-// }
 const waterDict = {
     2021: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     2022: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     2023: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     2024: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    2025: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    2026: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    2027: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 }
 const electricityDict = {
     2021: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     2022: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     2023: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     2024: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    2025: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    2026: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    2027: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 }
 const gasDict = {
     2021: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     2022: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     2023: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     2024: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    2025: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    2026: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    2027: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 }
 
 function getData(url, dict) {
@@ -73,24 +43,127 @@ function getData(url, dict) {
 getData('http://fee.yanchao.me/php/water.php', waterDict)
 getData('http://fee.yanchao.me/php/gas.php', gasDict)
 getData('http://fee.yanchao.me/php/electricity.php', electricityDict)
-const currYear = new Date().getFullYear()
-const monthRange = []
-const monthDisplayNum = 9
-const latestMonth = getLatestMonthIdx() + 1
-for (let i = 0; i < monthDisplayNum; i++) {
-    const currMonth =
-        latestMonth - i > 0
-            ? latestMonth - i
-            : 12 - (Math.abs(latestMonth - i) % 12)
-    monthRange.unshift(currMonth)
+
+const commonEchartsOption = {
+    darkMode: 'auto',
+    xAxis: {
+        type: 'category',
+        data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+    },
+    yAxis: {
+        type: 'value',
+    },
+    series: [
+        {
+            // data: global.electricityData,
+            type: 'bar',
+            itemStyle: {
+                normal: {label: {show: true}, color: '#91cc75'},
+            },
+        },
+    ],
+    title: {
+        // text:'',
+        textAlign: 'center',
+        top: 'bottom',
+        left: 'center',
+    },
 }
 
-const waterData = getDataFromDict(waterDict)
-const electricityData = getDataFromDict(electricityDict)
-const gasData = getDataFromDict(gasDict)
+const totalEchartsOption = {
+    darkMode: 'auto',
+    tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+            type: 'shadow',
+        },
+    },
+    legend: {},
+    grid: {
+        left: '3%',
+        right: '4%',
+        bottom: '3%',
+        containLabel: true,
+    },
+    xAxis: [
+        {
+            type: 'category',
+            data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+        },
+    ],
+    yAxis: [
+        {
+            type: 'value',
+        },
+    ],
+}
+
+function genTotalOptionsForYear(year) {
+    const waterStack = {
+        name: '水',
+        type: 'bar',
+        stack: 'Ad',
+        data: waterDict[year],
+        itemStyle: {
+            normal: {label: {show: true}, color: '#73c0de'},
+        },
+    }
+    const electricityStack = {
+        name: '电',
+        type: 'bar',
+        stack: 'Ad',
+        emphasis: {
+            focus: 'series',
+        },
+        data: electricityDict[year],
+        itemStyle: {
+            normal: {label: {show: true}, color: '#fac858'},
+        },
+    }
+    const gasStack = {
+        name: '气',
+        type: 'bar',
+        stack: 'Ad',
+        emphasis: {
+            focus: 'series',
+        },
+        data: gasDict[year],
+        itemStyle: {
+            normal: {label: {show: true}, color: '#91cc75'},
+        },
+    }
+    let mySeries = [waterStack, electricityStack, gasStack]
+    let totalData = []
+    for (let i = 0; i < waterStack.data.length; i++) {
+        totalData.push(
+            waterStack.data[i] + electricityStack.data[i] + gasStack.data[i]
+        )
+    }
+    const totalStack = {
+        name: '',
+        stack: 'Ad2',
+        type: 'bar',
+        barGap: '-100%',
+        data: totalData,
+        itemStyle: {
+            normal: {
+                label: {
+                    show: true,
+                    position: 'top',
+                },
+                color: 'rgba(128, 128, 128, 0)',
+            },
+        },
+    }
+    mySeries.push(totalStack)
+    return mySeries
+}
+
 export default {
-    monthRange,
-    waterData,
-    electricityData,
-    gasData,
+    commonEchartsOption,
+    waterDict,
+    electricityDict,
+    gasDict,
+    genTotalOptionsForYear,
+    totalEchartsOption,
 }

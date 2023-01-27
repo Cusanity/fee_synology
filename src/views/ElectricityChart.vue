@@ -1,5 +1,9 @@
 <template>
-    <v-chart class="chart" :option="option" />
+    <div>
+        <v-chart class="chart" :option="option2023" />
+        <v-chart class="chart" :option="option2022" />
+        <v-chart class="chart" :option="option2021" />
+    </div>
 </template>
 
 <script>
@@ -19,26 +23,46 @@
             VChart,
         },
         setup() {
-            const option = ref({
-                darkMode: 'auto',
-                xAxis: {
-                    type: 'category',
-                    data: global.monthRange,
-                },
-                yAxis: {
-                    type: 'value',
-                },
+            const option2023 = ref({
+                ...global.commonEchartsOption,
                 series: [
                     {
-                        data: global.electricityData,
-                        type: 'bar',
+                        ...global.commonEchartsOption.series[0],
+                        data: global.electricityDict[2023],
                         itemStyle: {
                             normal: {label: {show: true}, color: '#fac858'},
                         },
                     },
                 ],
+                title: {...global.commonEchartsOption.title, text: '2023'},
             })
-            return {option}
+            const option2022 = ref({
+                ...global.commonEchartsOption,
+                series: [
+                    {
+                        ...global.commonEchartsOption.series[0],
+                        data: global.electricityDict[2022],
+                        itemStyle: {
+                            normal: {label: {show: true}, color: '#fac858'},
+                        },
+                    },
+                ],
+                title: {...global.commonEchartsOption.title, text: '2022'},
+            })
+            const option2021 = ref({
+                ...global.commonEchartsOption,
+                series: [
+                    {
+                        ...global.commonEchartsOption.series[0],
+                        data: global.electricityDict[2021],
+                        itemStyle: {
+                            normal: {label: {show: true}, color: '#fac858'},
+                        },
+                    },
+                ],
+                title: {...global.commonEchartsOption.title, text: '2021'},
+            })
+            return {option2023, option2022, option2021}
         },
     })
 </script>

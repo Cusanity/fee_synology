@@ -1,43 +1,58 @@
 <template>
-    <v-chart class="chart" :option="option" />
+    <div>
+        <v-chart class="chart" :option="option2023" />
+        <v-chart class="chart" :option="option2022" />
+        <v-chart class="chart" :option="option2021" />
+    </div>
 </template>
 
 <script>
     import {use} from 'echarts/core'
     import VChart from 'vue-echarts'
     import {ref, defineComponent} from 'vue'
-    import {GridComponent} from 'echarts/components'
+    import {GridComponent, TitleComponent} from 'echarts/components'
     import {BarChart} from 'echarts/charts'
     import {CanvasRenderer} from 'echarts/renderers'
     import global from '../../src/components/GlobalData'
 
-    use([GridComponent, BarChart, CanvasRenderer])
+    use([GridComponent, BarChart, CanvasRenderer, TitleComponent])
     export default defineComponent({
         name: 'HelloWorld',
         components: {
             VChart,
         },
         setup() {
-            const option = ref({
-                darkMode: 'auto',
-                xAxis: {
-                    type: 'category',
-                    data: global.monthRange,
-                },
-                yAxis: {
-                    type: 'value',
-                },
+            const option2023 = ref({
+                ...global.commonEchartsOption,
                 series: [
                     {
-                        data: global.gasData,
-                        type: 'bar',
-                        itemStyle: {
-                            normal: {label: {show: true}, color: '#91cc75'},
-                        },
+                        ...global.commonEchartsOption.series[0],
+                        data: global.gasDict[2023],
                     },
                 ],
+                title: {...global.commonEchartsOption.title, text: '2023'},
             })
-            return {option}
+            const option2022 = ref({
+                ...global.commonEchartsOption,
+                series: [
+                    {
+                        ...global.commonEchartsOption.series[0],
+                        data: global.gasDict[2022],
+                    },
+                ],
+                title: {...global.commonEchartsOption.title, text: '2022'},
+            })
+            const option2021 = ref({
+                ...global.commonEchartsOption,
+                series: [
+                    {
+                        ...global.commonEchartsOption.series[0],
+                        data: global.gasDict[2021],
+                    },
+                ],
+                title: {...global.commonEchartsOption.title, text: '2021'},
+            })
+            return {option2023, option2022, option2021}
         },
     })
 </script>

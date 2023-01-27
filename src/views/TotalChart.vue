@@ -1,5 +1,9 @@
 <template>
-    <v-chart class="chart" :option="option" />
+    <div>
+        <v-chart class="chart" :option="option2023" />
+        <v-chart class="chart" :option="option2022" />
+        <v-chart class="chart" :option="option2021" />
+    </div>
 </template>
 
 <script>
@@ -32,88 +36,19 @@
             VChart,
         },
         setup() {
-            const waterStack = {
-                name: '水',
-                type: 'bar',
-                stack: 'Ad',
-                data: global.waterData,
-                itemStyle: {normal: {label: {show: true}, color: '#73c0de'}},
-            }
-            const electricityStack = {
-                name: '电',
-                type: 'bar',
-                stack: 'Ad',
-                emphasis: {
-                    focus: 'series',
-                },
-                data: global.electricityData,
-                itemStyle: {normal: {label: {show: true}, color: '#fac858'}},
-            }
-            const gasStack = {
-                name: '气',
-                type: 'bar',
-                stack: 'Ad',
-                emphasis: {
-                    focus: 'series',
-                },
-                data: global.gasData,
-                itemStyle: {normal: {label: {show: true}, color: '#91cc75'}},
-            }
-            let mySeries = [waterStack, electricityStack, gasStack]
-            let totalData = []
-            for (let i = 0; i < waterStack.data.length; i++) {
-                totalData.push(
-                    waterStack.data[i] +
-                        electricityStack.data[i] +
-                        gasStack.data[i]
-                )
-            }
-            const totalStack = {
-                name: '',
-                stack: 'Ad2',
-                type: 'bar',
-                barGap: '-100%',
-                data: totalData,
-                itemStyle: {
-                    normal: {
-                        label: {
-                            show: true,
-                            position: 'top',
-                        },
-                        color: 'rgba(128, 128, 128, 0)',
-                    },
-                },
-            }
-            mySeries.push(totalStack)
-            let option = ref({
-                darkMode: 'auto',
-                tooltip: {
-                    trigger: 'axis',
-                    axisPointer: {
-                        type: 'shadow',
-                    },
-                },
-                legend: {},
-                grid: {
-                    left: '3%',
-                    right: '4%',
-                    bottom: '3%',
-                    containLabel: true,
-                },
-                xAxis: [
-                    {
-                        type: 'category',
-                        data: global.monthRange,
-                    },
-                ],
-                yAxis: [
-                    {
-                        type: 'value',
-                    },
-                ],
-                series: mySeries,
+            const option2023 = ref({
+                ...global.totalEchartsOption,
+                series: global.genTotalOptionsForYear(2023),
             })
-            return {option}
+            const option2022 = ref({
+                ...global.totalEchartsOption,
+                series: global.genTotalOptionsForYear(2022),
+            })
+            const option2021 = ref({
+                ...global.totalEchartsOption,
+                series: global.genTotalOptionsForYear(2021),
+            })
+            return {option2023, option2022, option2021}
         },
     })
 </script>
