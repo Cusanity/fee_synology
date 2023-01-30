@@ -63,8 +63,6 @@ const commonEchartsOption = {
         },
     ],
     title: {
-        // text:'',
-        textAlign: 'center',
         top: 'bottom',
         left: 'center',
     },
@@ -82,7 +80,7 @@ const totalEchartsOption = {
     grid: {
         left: '3%',
         right: '4%',
-        bottom: '3%',
+        bottom: '8%',
         containLabel: true,
     },
     xAxis: [
@@ -99,13 +97,30 @@ const totalEchartsOption = {
 }
 
 function genTotalOptionsForYear(year) {
+    const yearSeries = genTotalSeriesForYear(year)
+    return {
+        ...totalEchartsOption,
+        series: yearSeries,
+        title: {
+            text:
+                year + ': $' + yearSeries.totalData.reduce((a, b) => a + b, 0),
+            top: 'bottom',
+            left: 'center',
+        },
+    }
+}
+
+function genTotalSeriesForYear(year) {
     const waterStack = {
         name: '水',
         type: 'bar',
         stack: 'Ad',
+        emphasis: {
+            focus: 'series',
+        },
         data: waterDict[year],
         itemStyle: {
-            normal: {label: {show: true}, color: '#73c0de'},
+            normal: {label: {show: true}, color: typeDict.water.color},
         },
     }
     const electricityStack = {
@@ -117,7 +132,10 @@ function genTotalOptionsForYear(year) {
         },
         data: electricityDict[year],
         itemStyle: {
-            normal: {label: {show: true}, color: '#fac858'},
+            normal: {
+                label: {show: true},
+                color: typeDict.electricity.color,
+            },
         },
     }
     const gasStack = {
@@ -129,7 +147,7 @@ function genTotalOptionsForYear(year) {
         },
         data: gasDict[year],
         itemStyle: {
-            normal: {label: {show: true}, color: '#91cc75'},
+            normal: {label: {show: true}, color: typeDict.gas.color},
         },
     }
     let mySeries = [waterStack, electricityStack, gasStack]
@@ -139,6 +157,7 @@ function genTotalOptionsForYear(year) {
             waterStack.data[i] + electricityStack.data[i] + gasStack.data[i]
         )
     }
+    mySeries.totalData = totalData
     const totalStack = {
         name: '',
         stack: 'Ad2',
@@ -159,11 +178,49 @@ function genTotalOptionsForYear(year) {
     return mySeries
 }
 
+function genSingleOptionForYear(type, year) {
+    return {
+        ...commonEchartsOption,
+        series: [
+            {
+                ...commonEchartsOption.series[0],
+                data: typeDict[type].dict[year],
+                itemStyle: {
+                    normal: {label: {show: true}, color: typeDict[type].color},
+                },
+            },
+        ],
+        title: {
+            ...commonEchartsOption.title,
+            text:
+                year +
+                ': $' +
+                typeDict[type].dict[year].reduce((a, b) => a + b, 0),
+        },
+    }
+}
+
+const typeDict = {
+    electricity: {
+        color: '#fac858',
+        dict: electricityDict,
+    },
+    gas: {
+        color: '#91cc75',
+        dict: gasDict,
+    },
+    water: {
+        color: '#73c0de',
+        dict: waterDict,
+    },
+}
+
 export default {
     commonEchartsOption,
     waterDict,
     electricityDict,
     gasDict,
     genTotalOptionsForYear,
+    genSingleOptionForYear,
     totalEchartsOption,
 }

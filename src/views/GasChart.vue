@@ -22,36 +22,9 @@
             VChart,
         },
         setup() {
-            const option2023 = ref({
-                ...global.commonEchartsOption,
-                series: [
-                    {
-                        ...global.commonEchartsOption.series[0],
-                        data: global.gasDict[2023],
-                    },
-                ],
-                title: {...global.commonEchartsOption.title, text: '2023'},
-            })
-            const option2022 = ref({
-                ...global.commonEchartsOption,
-                series: [
-                    {
-                        ...global.commonEchartsOption.series[0],
-                        data: global.gasDict[2022],
-                    },
-                ],
-                title: {...global.commonEchartsOption.title, text: '2022'},
-            })
-            const option2021 = ref({
-                ...global.commonEchartsOption,
-                series: [
-                    {
-                        ...global.commonEchartsOption.series[0],
-                        data: global.gasDict[2021],
-                    },
-                ],
-                title: {...global.commonEchartsOption.title, text: '2021'},
-            })
+            const option2023 = ref(global.genSingleOptionForYear('gas', 2023))
+            const option2022 = ref(global.genSingleOptionForYear('gas', 2022))
+            const option2021 = ref(global.genSingleOptionForYear('gas', 2021))
             return {option2023, option2022, option2021}
         },
     })

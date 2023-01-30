@@ -10,12 +10,12 @@
     import {use} from 'echarts/core'
     import VChart from 'vue-echarts'
     import {ref, defineComponent} from 'vue'
-    import {GridComponent} from 'echarts/components'
+    import {GridComponent, TitleComponent} from 'echarts/components'
     import {BarChart} from 'echarts/charts'
     import {CanvasRenderer} from 'echarts/renderers'
     import global from '../../src/components/GlobalData'
 
-    use([GridComponent, BarChart, CanvasRenderer])
+    use([GridComponent, BarChart, CanvasRenderer, TitleComponent])
 
     export default defineComponent({
         name: 'HelloWorld',
@@ -23,45 +23,15 @@
             VChart,
         },
         setup() {
-            const option2023 = ref({
-                ...global.commonEchartsOption,
-                series: [
-                    {
-                        ...global.commonEchartsOption.series[0],
-                        data: global.electricityDict[2023],
-                        itemStyle: {
-                            normal: {label: {show: true}, color: '#fac858'},
-                        },
-                    },
-                ],
-                title: {...global.commonEchartsOption.title, text: '2023'},
-            })
-            const option2022 = ref({
-                ...global.commonEchartsOption,
-                series: [
-                    {
-                        ...global.commonEchartsOption.series[0],
-                        data: global.electricityDict[2022],
-                        itemStyle: {
-                            normal: {label: {show: true}, color: '#fac858'},
-                        },
-                    },
-                ],
-                title: {...global.commonEchartsOption.title, text: '2022'},
-            })
-            const option2021 = ref({
-                ...global.commonEchartsOption,
-                series: [
-                    {
-                        ...global.commonEchartsOption.series[0],
-                        data: global.electricityDict[2021],
-                        itemStyle: {
-                            normal: {label: {show: true}, color: '#fac858'},
-                        },
-                    },
-                ],
-                title: {...global.commonEchartsOption.title, text: '2021'},
-            })
+            const option2023 = ref(
+                global.genSingleOptionForYear('electricity', 2023)
+            )
+            const option2022 = ref(
+                global.genSingleOptionForYear('electricity', 2022)
+            )
+            const option2021 = ref(
+                global.genSingleOptionForYear('electricity', 2021)
+            )
             return {option2023, option2022, option2021}
         },
     })
