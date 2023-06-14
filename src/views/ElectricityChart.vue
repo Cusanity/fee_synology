@@ -1,8 +1,11 @@
 <template>
     <div>
-        <v-chart class="chart" :option="option2023" />
-        <v-chart class="chart" :option="option2022" />
-        <v-chart class="chart" :option="option2021" />
+        <v-chart
+            class="chart"
+            v-for="(option, index) in [option2023, option2022, option2021]"
+            :option="option"
+            :key="index"
+        />
     </div>
 </template>
 
@@ -14,7 +17,6 @@
     import {BarChart} from 'echarts/charts'
     import {CanvasRenderer} from 'echarts/renderers'
     import global from '../../src/components/GlobalData'
-
     use([GridComponent, BarChart, CanvasRenderer, TitleComponent])
 
     export default defineComponent({

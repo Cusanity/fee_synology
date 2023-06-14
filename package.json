@@ -16,6 +16,7 @@
     "echarts": "^5.3.3",
     "jquery": "^3.6.1",
     "pinia": "^2.0.12",
+    "restore-cursor": "^4.0.0",
     "vant": "^3.5.2",
     "vue": "^3.2.13",
     "vue-echarts": "^6.2.3",
