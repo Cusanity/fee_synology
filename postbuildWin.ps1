@@ -1,4 +1,11 @@
-mkdir ./docs/php
-Copy-Item -Path "C:\Users\wyc93\Desktop\fun_code\vue3-demo\src\php\*" -Destination "C:\Users\wyc93\Desktop\fun_code\vue3-demo\docs\php" -Recurse
-Remove-Item "Z:\Cusanity\fee_web\*" -Recurse -Force
-Copy-Item -Path "C:\Users\wyc93\Desktop\fun_code\vue3-demo\docs\*" -Destination "Z:\Cusanity\fee_web" -Recurse
+$scriptPath = Split-Path -Parent $MyInvocation.MyCommand.Path
+$sourcePath = Join-Path $scriptPath "src\php"
+$destinationPath = Join-Path $scriptPath "docs\php"
+$feeWebPath = "Z:\Cusanity\fee_web"
+
+if (!(Test-Path $destinationPath)) {
+    mkdir $destinationPath
+}
+Copy-Item -Path "$sourcePath\*" -Destination $destinationPath -Recurse
+Remove-Item "$feeWebPath\*" -Recurse -Force
+Copy-Item -Path "$scriptPath\docs\*" -Destination $feeWebPath -Recurse
