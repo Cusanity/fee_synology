@@ -40,9 +40,12 @@ function getData(url, dict) {
         dict[obj.year][obj.month - 1] = obj.amount
     }
 }
-getData('http://fee.yanchao.me/php/water.php', waterDict)
-getData('http://fee.yanchao.me/php/gas.php', gasDict)
-getData('http://fee.yanchao.me/php/electricity.php', electricityDict)
+getData('http://' + window.location.hostname + '/php/water.php', waterDict)
+getData('http://' + window.location.hostname + '/php/gas.php', gasDict)
+getData(
+    'http://' + window.location.hostname + '/php/electricity.php',
+    electricityDict
+)
 
 const commonEchartsOption = {
     darkMode: 'auto',
