@@ -2,7 +2,7 @@
     <div>
         <v-chart
             class="chart"
-            v-for="(option, index) in [option2023, option2022, option2021]"
+            v-for="(option, index) in options"
             :option="option"
             :key="index"
         />
@@ -24,10 +24,14 @@
             VChart,
         },
         setup() {
-            const option2023 = ref(global.genSingleOptionForYear('gas', 2023))
-            const option2022 = ref(global.genSingleOptionForYear('gas', 2022))
-            const option2021 = ref(global.genSingleOptionForYear('gas', 2021))
-            return {option2023, option2022, option2021}
+            const currentYear = new Date().getFullYear()
+            const options = ref([])
+
+            for (let year = currentYear; year >= 2021; year--) {
+                const option = global.genSingleOptionForYear('gas', year)
+                options.value.push(option)
+            }
+            return {options}
         },
     })
 </script>
