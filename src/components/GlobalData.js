@@ -38,7 +38,6 @@ const commonEchartsOption = {
     },
     series: [
         {
-            // data: global.electricityData,
             type: 'bar',
             itemStyle: {
                 normal: {label: {show: true}, color: '#91cc75'},
