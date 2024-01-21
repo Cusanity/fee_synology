@@ -12,7 +12,7 @@ function getData($mysqli): array
     $stmt->close();
     return $myArray;
 }
-$servername = "98.14.35.98";
+$servername = $_SERVER['SERVER_ADDR'];
 $db_username = "root";
 $db_password = "Wyc935398521!";
 $database = "fee";
