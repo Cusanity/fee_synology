@@ -20,10 +20,10 @@ function getData(url, dict) {
         dict[obj.year][obj.month - 1] = obj.amount
     }
 }
-getData('http://' + window.location.hostname + '/php/water.php', waterDict)
-getData('http://' + window.location.hostname + '/php/gas.php', gasDict)
+getData('https://' + window.location.hostname + '/php/water.php', waterDict)
+getData('https://' + window.location.hostname + '/php/gas.php', gasDict)
 getData(
-    'http://' + window.location.hostname + '/php/electricity.php',
+    'https://' + window.location.hostname + '/php/electricity.php',
     electricityDict
 )
 
