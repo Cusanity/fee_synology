@@ -21,11 +21,23 @@
                 </thead>
                 <tbody>
                     <tr v-for="(item, index) in tableData" :key="index">
-                        <td><input v-model.trim="item.year" /></td>
-                        <td><input v-model.trim="item.month" /></td>
+                        <td>
+                            <input v-model.trim="item.year" disabled />
+                        </td>
+                        <td>
+                            <input v-model.trim="item.month" disabled />
+                        </td>
                         <td><input v-model.trim="item.amount" /></td>
                         <td>
-                            <button @click="updateData(index)">Update</button>
+                            <button
+                                @click="
+                                    item.isNew
+                                        ? insertData(index)
+                                        : updateData(index)
+                                "
+                            >
+                                {{ item.isNew ? 'Insert' : 'Update' }}
+                            </button>
                         </td>
                     </tr>
                 </tbody>
@@ -34,12 +46,20 @@
     </div>
 </template>
 
-<script setup>
+<script lang="ts" setup>
     import {ref, onMounted} from 'vue'
     import axios from 'axios'
 
+    // Define the data type for table data
+    interface TableData {
+        year: number
+        month: number
+        amount: number | string
+        isNew?: boolean // Optional field to indicate new rows
+    }
+
     const loading = ref(true)
-    const tableData = ref([])
+    const tableData = ref<TableData[]>([]) // Provide the correct type for tableData
     const table = ref('electricity')
 
     const fetchData = async () => {
@@ -48,12 +68,15 @@
             const response = await axios.get(
                 `https://fee.cusanity.synology.me/php/data.php?type=${table.value}`
             )
-            tableData.value = response.data.data.sort((a, b) => {
-                if (a.year !== b.year) {
-                    return b.year - a.year
+            debugger
+            tableData.value = response.data.data.sort(
+                (a: TableData, b: TableData) => {
+                    if (a.year !== b.year) {
+                        return b.year - a.year
+                    }
+                    return b.month - a.month
                 }
-                return b.month - a.month
-            })
+            )
         } catch (error) {
             console.error('Error fetching data:', error)
         } finally {
@@ -61,19 +84,43 @@
         }
     }
 
-    const updateData = async (index) => {
+    const updateData = async (index: number) => {
         const item = tableData.value[index]
-        item.table = table.value
+        item.isNew = false
         try {
-            await axios.post(
+            const response = await axios.post(
                 `https://fee.cusanity.synology.me/php/data.php?type=${table.value}`,
                 item
             )
-            alert('Data updated successfully!')
+            if (response.data.status === 'success') {
+                alert('Data updated successfully!')
+            } else {
+                alert('Error updating data.')
+            }
         } catch (error) {
             console.error('Error updating data:', error)
         }
     }
+
+    const insertData = async (index: number) => {
+        const item = tableData.value[index]
+        item.isNew = true
+        try {
+            const response = await axios.post(
+                `https://fee.cusanity.synology.me/php/data.php?type=${table.value}`,
+                item
+            )
+            if (response.data.status === 'success') {
+                alert('Data inserted successfully!')
+                fetchData() // Refresh the data after insertion
+            } else {
+                alert('Error inserting data.')
+            }
+        } catch (error) {
+            console.error('Error inserting data:', error)
+        }
+    }
+
     onMounted(fetchData)
 </script>
 
