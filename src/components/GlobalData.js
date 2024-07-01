@@ -17,7 +17,11 @@ function getData(url, dict) {
         }).responseText
     ).data
     for (let obj of res) {
-        dict[obj.year][obj.month - 1] = obj.amount
+        const amount =
+            typeof obj.amount === 'number' && !Number.isNaN(obj.amount)
+                ? obj.amount
+                : 0
+        dict[obj.year][obj.month - 1] = amount
     }
 }
 getData(
