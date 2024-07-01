@@ -1,64 +1,122 @@
 <template>
-  <div ref="root" class="text-center">
-    <NoticeBar left-icon="volume-o" text="在代码阅读过程中人们说脏话的频率是衡量代码质量的唯一标准。" />
-    <p class="mg20">This is a root element</p>
-    <div class="flex flex-column">
-      <div class="flex flex-center mg-t10">
-        <label>姓名：</label>
-        <input ref="nameinput" v-model.trim="formData.name" maxlength="16" />
-      </div>
-      <div class="flex flex-center mg-t10">
-        <label>手机号：</label>
-        <input type="tel" v-model.trim="formData.phone" maxlength="11" />
-      </div>
-      <div class="flex flex-center mg-t10">
-        <label>验证码：</label>
-        <input type="tel" v-model.trim="formData.code" maxlength="6" />
-      </div>
+    <div class="text-center">
+        <div>
+            <label for="table-select">Select Table:</label>
+            <select id="table-select" v-model="table" @change="fetchData">
+                <option value="electricity">Electricity</option>
+                <option value="water">Water</option>
+                <option value="gas">Gas</option>
+            </select>
+        </div>
+        <div v-if="loading">Loading...</div>
+        <div v-else>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Year</th>
+                        <th>Month</th>
+                        <th>Amount</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(item, index) in tableData" :key="index">
+                        <td><input v-model.trim="item.year" /></td>
+                        <td><input v-model.trim="item.month" /></td>
+                        <td><input v-model.trim="item.amount" /></td>
+                        <td>
+                            <button @click="updateData(index)">Update</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
-    <p class="mg-t10">{{ formData }}</p>
-    <Button type="primary" @click="insertName()">姓名插入哈哈</Button>
-    <Steps direction="vertical" :active="1">
-      <Step>
-        <h3>商品已下单</h3>
-        <p>{{ twoNow }}</p>
-      </Step>
-      <Step>
-        <h3>快件已被揽收</h3>
-        <p>{{ now }}</p>
-      </Step>
-      <Step>
-        <h3>快件已发货</h3>
-        <p>{{ now2 }}</p>
-      </Step>
-    </Steps>
-  </div>
 </template>
 
-<script lang="ts" setup>
-import dayjs from "dayjs";
-import { ref, reactive, onMounted } from "vue";
-import { Button, Step, Steps, NoticeBar } from "vant";
+<script setup>
+    import {ref, onMounted} from 'vue'
+    import axios from 'axios'
 
-const root = ref();
-const nameinput = ref();
-const twoNow = dayjs().subtract(2, "day").format("YYYY-MM-DD HH:mm:ss");
-const now = dayjs().format("YYYY-MM-DD HH:mm:ss");
-const now2 = dayjs().add(2, "day").format("YYYY-MM-DD HH:mm:ss");
-const formData = reactive({
-  name: "",
-  phone: "",
-  code: "",
-});
+    const loading = ref(true)
+    const tableData = ref([])
+    const table = ref('electricity')
 
-onMounted(() => {
-  (nameinput.value as HTMLInputElement).focus();
-});
+    const fetchData = async () => {
+        loading.value = true
+        try {
+            const response = await axios.get(
+                `https://fee.cusanity.synology.me/php/data.php?type=${table.value}`
+            )
+            tableData.value = response.data.data.sort((a, b) => {
+                if (a.year !== b.year) {
+                    return b.year - a.year
+                }
+                return b.month - a.month
+            })
+        } catch (error) {
+            console.error('Error fetching data:', error)
+        } finally {
+            loading.value = false
+        }
+    }
 
-const insertName = () => {
-  const index = (nameinput.value as HTMLInputElement).selectionStart;
-  if (typeof index !== "number") return;
-  formData.name =
-    formData.name.slice(0, index) + "哈哈" + formData.name.slice(index);
-}
+    const updateData = async (index) => {
+        const item = tableData.value[index]
+        item.table = table.value
+        try {
+            await axios.post(
+                `https://fee.cusanity.synology.me/php/data.php?type=${table.value}`,
+                item
+            )
+            alert('Data updated successfully!')
+        } catch (error) {
+            console.error('Error updating data:', error)
+        }
+    }
+    onMounted(fetchData)
 </script>
+
+<style scoped>
+    .text-center {
+        text-align: center;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    th,
+    td {
+        border: 1px solid #ddd;
+        padding: 8px;
+    }
+
+    th {
+        background-color: #f2f2f2;
+    }
+
+    td input {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    button {
+        padding: 5px 10px;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #45a049;
+    }
+
+    select {
+        margin-top: 10px;
+        padding: 5px;
+    }
+</style>

@@ -24,16 +24,48 @@ if ($mysqli->connect_error) {
     die("Connection failed: " . $mysqli->connect_error);
 }
 
-// Use a query parameter to determine which data to fetch
-$tableName = isset($_GET['type']) ? $_GET['type'] : 'electricity';
-
-// Validate the table name to prevent SQL injection
-$validTables = ['electricity', 'gas', 'water'];
-if (!in_array($tableName, $validTables)) {
-    die('Invalid data type.');
+// Function to update data
+function updateData($mysqli, $tableName, $data): bool
+{
+    $stmt = $mysqli->prepare("UPDATE $tableName SET amount = ? WHERE year = ? AND month = ?");
+    if (!$stmt) {
+        die("Prepare failed: (" . $mysqli->errno . ") " . $mysqli->error);
+    }
+    $stmt->bind_param("iii", $data['amount'], $data['year'], $data['month']);
+    $result = $stmt->execute();
+    $stmt->close();
+    return $result;
 }
 
-$resp = array();
-$resp["data"] = getData($mysqli, $tableName);
-echo json_encode($resp);
+$requestMethod = $_SERVER['REQUEST_METHOD'];
+
+if ($requestMethod === 'GET') {
+    // Use a query parameter to determine which data to fetch
+    $tableName = isset($_GET['type']) ? $_GET['type'] : 'electricity';
+
+    // Validate the table name to prevent SQL injection
+    $validTables = ['electricity', 'gas', 'water'];
+    if (!in_array($tableName, $validTables)) {
+        die('Invalid data type.');
+    }
+
+    $resp = array();
+    $resp["data"] = getData($mysqli, $tableName);
+    echo json_encode($resp);
+} elseif ($requestMethod === 'POST') {
+    $tableName = isset($_GET['type']) ? $_GET['type'] : 'electricity';
+
+    // Validate the table name to prevent SQL injection
+    $validTables = ['electricity', 'gas', 'water'];
+    if (!in_array($tableName, $validTables)) {
+        die('Invalid data type.');
+    }
+    $data = json_decode(file_get_contents('php://input'), true);
+
+    if (updateData($mysqli, $tableName, $data)) {
+        echo json_encode(['status' => 'success']);
+    } else {
+        echo json_encode(['status' => 'error']);
+    }
+}
 ?>
