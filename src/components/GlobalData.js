@@ -21,7 +21,17 @@ function getData(url, dict) {
             typeof obj.amount === 'number' && !Number.isNaN(obj.amount)
                 ? obj.amount
                 : 0
-        dict[obj.year][obj.month - 1] = amount
+        if (
+            amount > 0 &&
+            obj &&
+            obj.year !== undefined &&
+            obj.month !== undefined
+        ) {
+            if (!dict[obj.year]) {
+                dict[obj.year] = Array(12).fill(0) // Initialize an array of 12 months with default value 0
+            }
+            dict[obj.year][obj.month - 1] = amount
+        }
     }
 }
 getData(
