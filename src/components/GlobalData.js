@@ -34,16 +34,10 @@ function getData(url, dict) {
         }
     }
 }
+getData('https://fee.cusanity.synology.me/php/data.php?type=water', waterDict)
+getData('https://fee.cusanity.synology.me/php/data.php?type=gas', gasDict)
 getData(
-    'https://' + window.location.hostname + '/php/data.php?type=water',
-    waterDict
-)
-getData(
-    'https://' + window.location.hostname + '/php/data.php?type=gas',
-    gasDict
-)
-getData(
-    'https://' + window.location.hostname + '/php/data.php?type=electricity',
+    'https://fee.cusanity.synology.me/php/data.php?type=electricity',
     electricityDict
 )
 
@@ -204,15 +198,15 @@ function genSingleOptionForYear(type, year) {
 
 const typeDict = {
     electricity: {
-        color: '#fac858',
+        color: '#ffc107',
         dict: electricityDict,
     },
     gas: {
-        color: '#91cc75',
+        color: '#ff9800',
         dict: gasDict,
     },
     water: {
-        color: '#73c0de',
+        color: '#2196f3',
         dict: waterDict,
     },
 }
