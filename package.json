@@ -5,7 +5,6 @@
     "scripts": {
         "serve": "vue-cli-service serve",
         "build": "vue-cli-service build",
-        "postbuild": "powershell -ExecutionPolicy Bypass -File postbuildWin.ps1",
         "lint": "vue-cli-service lint"
     },
     "dependencies": {
