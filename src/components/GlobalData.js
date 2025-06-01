@@ -54,7 +54,14 @@ const commonEchartsOption = {
         {
             type: 'bar',
             itemStyle: {
-                normal: {label: {show: true}, color: '#91cc75'},
+                normal: {
+                    label: {
+                        show: true,
+                        color: '#000000', // Force black text
+                        backgroundColor: 'transparent', // Remove any background
+                    },
+                    color: '#91cc75',
+                },
             },
         },
     ],
@@ -107,6 +114,13 @@ function genTotalOptionsForYear(year) {
 }
 
 function genTotalSeriesForYear(year) {
+    // Create a consistent label configuration for all series
+    const labelConfig = {
+        show: true,
+        color: '#000000', // Force black text for all labels
+        backgroundColor: 'transparent', // Remove any background
+    }
+
     const waterStack = {
         name: '水',
         type: 'bar',
@@ -116,7 +130,7 @@ function genTotalSeriesForYear(year) {
         },
         data: waterDict[year],
         itemStyle: {
-            normal: {label: {show: true}, color: typeDict.water.color},
+            normal: {label: labelConfig, color: typeDict.water.color},
         },
     }
     const electricityStack = {
@@ -129,7 +143,7 @@ function genTotalSeriesForYear(year) {
         data: electricityDict[year],
         itemStyle: {
             normal: {
-                label: {show: true},
+                label: labelConfig,
                 color: typeDict.electricity.color,
             },
         },
@@ -143,7 +157,7 @@ function genTotalSeriesForYear(year) {
         },
         data: gasDict[year],
         itemStyle: {
-            normal: {label: {show: true}, color: typeDict.gas.color},
+            normal: {label: labelConfig, color: typeDict.gas.color},
         },
     }
     let mySeries = [waterStack, electricityStack, gasStack]
@@ -165,6 +179,8 @@ function genTotalSeriesForYear(year) {
                 label: {
                     show: true,
                     position: 'top',
+                    color: '#000000', // Force black text
+                    backgroundColor: 'transparent', // Remove any background
                 },
                 color: 'rgba(128, 128, 128, 0)',
             },
@@ -175,6 +191,13 @@ function genTotalSeriesForYear(year) {
 }
 
 function genSingleOptionForYear(type, year) {
+    // Create a label configuration that's consistent for all chart types
+    const labelConfig = {
+        show: true,
+        color: '#000000', // Force black text for all labels
+        backgroundColor: 'transparent', // Remove any background
+    }
+
     return {
         ...commonEchartsOption,
         series: [
@@ -182,7 +205,10 @@ function genSingleOptionForYear(type, year) {
                 ...commonEchartsOption.series[0],
                 data: typeDict[type].dict[year],
                 itemStyle: {
-                    normal: {label: {show: true}, color: typeDict[type].color},
+                    normal: {
+                        label: labelConfig,
+                        color: typeDict[type].color,
+                    },
                 },
             },
         ],

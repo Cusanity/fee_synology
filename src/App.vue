@@ -5,29 +5,31 @@
                 <component :is="Component" />
             </transition>
         </router-view>
-        <Tabbar placeholder route v-show="showFooter">
-            <!-- <TabbarItem icon="home-o" replace to="/">Home</TabbarItem>
-      <TabbarItem icon="search" replace to="/about">About</TabbarItem>
-      <TabbarItem icon="friends-o" replace to="/todoList">ToDo</TabbarItem>
-      <TabbarItem icon="setting-o" replace to="/luckdraw">LuckDraw</TabbarItem> -->
-            <TabbarItem replace to="/waterChart">水</TabbarItem>
-            <TabbarItem replace to="/electricityChart">电</TabbarItem>
-            <TabbarItem replace to="/gasChart">气</TabbarItem>
-            <TabbarItem replace to="/totalChart">总</TabbarItem>
-        </Tabbar>
+        <!-- Floating buttons for navigation -->
+        <div class="floating-buttons" v-if="showFooter">
+            <router-link to="/waterChart" class="float-btn water-btn"
+                >水</router-link
+            >
+            <router-link
+                to="/electricityChart"
+                class="float-btn electricity-btn"
+                >电</router-link
+            >
+            <router-link to="/gasChart" class="float-btn gas-btn"
+                >气</router-link
+            >
+            <router-link to="/totalChart" class="float-btn total-btn"
+                >总</router-link
+            >
+        </div>
     </div>
 </template>
 
 <script lang="ts">
     import {defineComponent} from 'vue'
-    import {Tabbar, TabbarItem} from 'vant'
 
     export default defineComponent({
         name: 'App',
-        components: {
-            Tabbar,
-            TabbarItem,
-        },
         computed: {
             showFooter() {
                 return this.$route.path.split('/').length < 3
@@ -35,3 +37,64 @@
         },
     })
 </script>
+
+<style>
+    .floating-buttons {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        z-index: 1000;
+    }
+
+    .float-btn {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 30px; /* 更小的按钮尺寸 */
+        height: 30px; /* 更小的按钮尺寸 */
+        border-radius: 50%;
+        color: white;
+        font-weight: thinner;
+        text-decoration: none;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        transition: all 0.3s ease;
+        font-size: 10px; /* 减小字体大小 */
+    }
+
+    .float-btn:hover,
+    .float-btn:active {
+        transform: scale(1.05);
+        box-shadow: 0 6px 14px rgba(0, 0, 0, 0.4);
+    }
+
+    .water-btn {
+        background-color: #2196f3; /* Water is blue */
+    }
+    .water-btn:hover {
+        background-color: #1976d2; /* Darker blue on hover */
+    }
+
+    .electricity-btn {
+        background-color: #ffc107; /* Electricity is amber */
+    }
+    .electricity-btn:hover {
+        background-color: #ffb300; /* Darker amber on hover */
+    }
+
+    .gas-btn {
+        background-color: #ff9800; /* Gas is orange */
+    }
+    .gas-btn:hover {
+        background-color: #fb8c00; /* Darker orange on hover */
+    }
+
+    .total-btn {
+        background-color: #4caf50; /* Total is green */
+    }
+    .total-btn:hover {
+        background-color: #388e3c; /* Darker green on hover */
+    }
+</style>
