@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { fetchFeeData, type FeeData, type FeeType } from '../services/api'
 
 interface UseFeeDataResult {
@@ -48,22 +48,20 @@ function saveToCache(data: Record<FeeType, FeeData>): void {
 }
 
 export function useFeeData(): UseFeeDataResult {
-  const [data, setData] = useState<Record<FeeType, FeeData>>(() => {
-    // Initialize with cached data if available
-    return getFromCache() || { water: {}, electricity: {}, gas: {} }
-  })
-  const [loading, setLoading] = useState(() => !getFromCache())
+  // Check cache once during initialization
+  const initialCache = useRef(getFromCache())
+  
+  const [data, setData] = useState<Record<FeeType, FeeData>>(
+    initialCache.current || { water: {}, electricity: {}, gas: {} }
+  )
+  const [loading, setLoading] = useState(!initialCache.current)
   const [error, setError] = useState<Error | null>(null)
 
   const fetchAll = useCallback(async (skipCache = false) => {
-    // Check cache first unless explicitly skipping
-    if (!skipCache) {
-      const cached = getFromCache()
-      if (cached) {
-        setData(cached)
-        setLoading(false)
-        return
-      }
+    // If we already have cached data from initialization, skip fetch
+    if (!skipCache && initialCache.current) {
+      initialCache.current = null // Clear so future calls can fetch
+      return
     }
 
     setLoading(true)
@@ -90,8 +88,10 @@ export function useFeeData(): UseFeeDataResult {
 
   const refetch = useCallback(() => {
     localStorage.removeItem(CACHE_KEY)
+    initialCache.current = null
     fetchAll(true)
   }, [fetchAll])
 
   return { data, loading, error, refetch }
 }
+

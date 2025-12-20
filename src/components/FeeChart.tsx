@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import ReactECharts from 'echarts-for-react'
 import type { EChartsOption } from 'echarts'
 import './FeeChart.css'
@@ -9,7 +10,7 @@ interface FeeChartProps {
 }
 
 export default function FeeChart({ option, title, subtitle }: FeeChartProps) {
-    const enhancedOption: EChartsOption = {
+    const enhancedOption = useMemo<EChartsOption>(() => ({
         ...option,
         backgroundColor: 'transparent',
         textStyle: {
@@ -22,7 +23,7 @@ export default function FeeChart({ option, title, subtitle }: FeeChartProps) {
             top: '15%',
             containLabel: true,
         },
-    }
+    }), [option, title])
 
     return (
         <div className="fee-chart">
@@ -42,3 +43,4 @@ export default function FeeChart({ option, title, subtitle }: FeeChartProps) {
         </div>
     )
 }
+
