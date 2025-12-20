@@ -5,29 +5,42 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "prebuild": "npx npm-check-updates -u && npm install",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "lint:fix": "eslint . --fix",
+    "preview": "vite preview",
+    "prepare": "husky",
+    "update": "npx npm-check-updates -u && npm install",
+    "check-updates": "npm outdated --long"
   },
   "dependencies": {
-    "axios": "^1.7.9",
-    "echarts": "^5.5.1",
-    "echarts-for-react": "^3.0.2",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "react-router-dom": "^7.1.0"
+    "axios": "^1.13.2",
+    "echarts": "^6.0.0",
+    "echarts-for-react": "^3.0.5",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "react-router-dom": "^7.11.0"
   },
   "devDependencies": {
-    "@eslint/js": "^9.17.0",
-    "@types/react": "^19.0.1",
-    "@types/react-dom": "^19.0.2",
-    "@vitejs/plugin-react": "^4.3.4",
-    "eslint": "^9.17.0",
-    "eslint-plugin-react-hooks": "^5.1.0",
-    "eslint-plugin-react-refresh": "^0.4.16",
-    "globals": "^15.14.0",
-    "typescript": "~5.7.2",
-    "typescript-eslint": "^8.18.1",
-    "vite": "^6.0.5"
+    "@eslint/js": "^9.39.2",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.2",
+    "eslint": "^9.39.2",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.4.26",
+    "globals": "^16.5.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.50.0",
+    "vite": "^7.3.0"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix"
+    ]
   }
 }
+

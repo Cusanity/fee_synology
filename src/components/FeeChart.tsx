@@ -19,7 +19,7 @@ export default function FeeChart({ option, title, subtitle }: FeeChartProps) {
             left: '3%',
             right: '4%',
             bottom: title ? '15%' : '8%',
-            top: subtitle ? '10%' : '8%',
+            top: '15%',
             containLabel: true,
         },
     }
@@ -37,6 +37,7 @@ export default function FeeChart({ option, title, subtitle }: FeeChartProps) {
                 style={{ height: '400px', width: '100%' }}
                 opts={{ renderer: 'canvas' }}
                 theme="dark"
+                notMerge={true}
             />
         </div>
     )

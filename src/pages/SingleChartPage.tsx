@@ -1,9 +1,22 @@
-import { useMemo } from 'react'
-import FeeChart from '../components/FeeChart'
+import { useMemo, Suspense, lazy } from 'react'
 import { useFeeData } from '../hooks/useFeeData'
 import { feeColors, type FeeType } from '../services/api'
 import type { EChartsOption } from 'echarts'
 import './ChartPage.css'
+
+const FeeChart = lazy(() => import('../components/FeeChart'))
+
+function ChartSkeleton() {
+    return (
+        <div className="chart-skeleton">
+            <div className="skeleton-header">
+                <div className="skeleton-line" style={{ width: '30%' }} />
+                <div className="skeleton-line" style={{ width: '15%' }} />
+            </div>
+            <div className="skeleton-chart" />
+        </div>
+    )
+}
 
 interface SingleChartPageProps {
     type: FeeType
@@ -35,9 +48,9 @@ function SingleChartPage({ type, icon }: SingleChartPageProps) {
                 },
                 xAxis: {
                     type: 'category',
-                    data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+                    data: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
                     axisLine: { lineStyle: { color: '#444' } },
-                    axisLabel: { color: '#888' },
+                    axisLabel: { color: '#888', fontSize: 11 },
                 },
                 yAxis: {
                     type: 'value',
@@ -45,6 +58,9 @@ function SingleChartPage({ type, icon }: SingleChartPageProps) {
                     axisLabel: { color: '#888' },
                     splitLine: { lineStyle: { color: '#333' } },
                 },
+                animationDuration: 800,
+                animationEasing: 'cubicOut',
+                animationDelay: (idx) => idx * 50,
                 series: [
                     {
                         type: 'bar',
@@ -58,6 +74,9 @@ function SingleChartPage({ type, icon }: SingleChartPageProps) {
                             position: 'top',
                             color: feeColors[type].light,
                             fontWeight: 'bold',
+                            fontSize: 10,
+                            rotate: 45,
+                            offset: [0, -12],
                             formatter: (p) => p.value && Number(p.value) > 0 ? `$${p.value}` : '',
                         },
                         emphasis: {
@@ -79,24 +98,15 @@ function SingleChartPage({ type, icon }: SingleChartPageProps) {
         gas: '气费',
     }
 
-    if (loading) {
-        return (
-            <div className="chart-page">
-                <h1 className="page-title">{titles[type]}</h1>
-                <div className="loading-container">
-                    <div className="loading-spinner" />
-                    <p>加载中...</p>
-                </div>
-            </div>
-        )
-    }
-
     if (error) {
         return (
             <div className="chart-page">
                 <h1 className="page-title">{titles[type]}</h1>
                 <div className="error-container">
                     <p>加载失败: {error.message}</p>
+                    <button onClick={() => window.location.reload()} className="retry-btn">
+                        重试
+                    </button>
                 </div>
             </div>
         )
@@ -108,14 +118,23 @@ function SingleChartPage({ type, icon }: SingleChartPageProps) {
                 <span className="title-icon">{icon}</span>
                 {titles[type]}
             </h1>
-            {charts.map(({ year, option, total }) => (
-                <FeeChart
-                    key={year}
-                    option={option}
-                    title={String(year)}
-                    subtitle={`$${total.toFixed(0)}`}
-                />
-            ))}
+            {loading ? (
+                <>
+                    <ChartSkeleton />
+                    <ChartSkeleton />
+                </>
+            ) : (
+                <Suspense fallback={<ChartSkeleton />}>
+                    {charts.map(({ year, option, total }) => (
+                        <FeeChart
+                            key={year}
+                            option={option}
+                            title={String(year)}
+                            subtitle={`$${total.toFixed(0)}`}
+                        />
+                    ))}
+                </Suspense>
+            )}
         </div>
     )
 }

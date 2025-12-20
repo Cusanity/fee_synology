@@ -10,12 +10,11 @@
 
 .nav-btn {
   display: flex;
-  justify-content: center;
   align-items: center;
-  width: 48px;
-  height: 48px;
+  gap: var(--space-xs);
+  height: 44px;
+  padding: 0 var(--space-sm);
   border-radius: var(--radius-full);
-  font-size: 1.25rem;
   text-decoration: none;
   background: var(--glass-bg);
   backdrop-filter: blur(12px);
@@ -23,12 +22,39 @@
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
   transition: all var(--transition-base);
   cursor: pointer;
+  overflow: hidden;
+  min-width: 44px;
+}
+
+.nav-icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+  width: 28px;
+  text-align: center;
+}
+
+.nav-label {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-text);
+  white-space: nowrap;
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: all var(--transition-base);
 }
 
 .nav-btn:hover {
-  transform: scale(1.1);
+  transform: translateX(-4px);
   background: var(--glass-bg-hover);
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+  padding-right: var(--space-md);
+}
+
+.nav-btn:hover .nav-label {
+  max-width: 60px;
+  opacity: 1;
+  margin-right: var(--space-xs);
 }
 
 .nav-btn:active {
@@ -60,15 +86,40 @@
   box-shadow: 0 0 0 2px var(--color-total), 0 4px 16px rgba(76, 175, 80, 0.3);
 }
 
+.add-btn {
+  margin-top: var(--space-md);
+  background: linear-gradient(135deg, var(--color-primary), hsl(220, 95%, 50%));
+  border: none;
+}
+
+.add-btn:hover {
+  background: linear-gradient(135deg, var(--color-primary-hover), hsl(220, 95%, 60%));
+}
+
+.add-btn .nav-label {
+  color: white;
+}
+
 @media (max-width: 768px) {
   .floating-nav {
     bottom: var(--space-md);
     right: var(--space-md);
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    max-width: calc(100vw - 32px);
   }
   
   .nav-btn {
-    width: 40px;
+    min-width: 40px;
     height: 40px;
+  }
+  
+  .nav-icon {
     font-size: 1rem;
+  }
+  
+  .nav-btn:hover {
+    transform: translateY(-4px);
   }
 }

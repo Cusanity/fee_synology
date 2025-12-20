@@ -1,9 +1,24 @@
-import { useMemo } from 'react'
-import FeeChart from '../components/FeeChart'
+import { useMemo, Suspense, lazy } from 'react'
 import { useFeeData } from '../hooks/useFeeData'
 import { feeColors, feeLabels } from '../services/api'
 import type { EChartsOption } from 'echarts'
+import SummaryCard from '../components/SummaryCard'
 import './ChartPage.css'
+
+// Lazy load FeeChart for code splitting
+const FeeChart = lazy(() => import('../components/FeeChart'))
+
+function ChartSkeleton() {
+    return (
+        <div className="chart-skeleton">
+            <div className="skeleton-header">
+                <div className="skeleton-line" style={{ width: '30%' }} />
+                <div className="skeleton-line" style={{ width: '15%' }} />
+            </div>
+            <div className="skeleton-chart" />
+        </div>
+    )
+}
 
 export default function TotalChart() {
     const { data, loading, error } = useFeeData()
@@ -40,9 +55,9 @@ export default function TotalChart() {
                 },
                 xAxis: {
                     type: 'category',
-                    data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+                    data: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
                     axisLine: { lineStyle: { color: '#444' } },
-                    axisLabel: { color: '#888' },
+                    axisLabel: { color: '#888', fontSize: 11 },
                 },
                 yAxis: {
                     type: 'value',
@@ -50,6 +65,9 @@ export default function TotalChart() {
                     axisLabel: { color: '#888' },
                     splitLine: { lineStyle: { color: '#333' } },
                 },
+                animationDuration: 800,
+                animationEasing: 'cubicOut',
+                animationDelay: (idx) => idx * 50,
                 series: [
                     {
                         name: feeLabels.water,
@@ -61,7 +79,7 @@ export default function TotalChart() {
                         label: {
                             show: true,
                             color: '#000',
-                            fontSize: 10,
+                            fontSize: 9,
                             formatter: (p) => p.value && Number(p.value) > 0 ? String(p.value) : '',
                         },
                     },
@@ -75,7 +93,7 @@ export default function TotalChart() {
                         label: {
                             show: true,
                             color: '#000',
-                            fontSize: 10,
+                            fontSize: 9,
                             formatter: (p) => p.value && Number(p.value) > 0 ? String(p.value) : '',
                         },
                     },
@@ -89,7 +107,7 @@ export default function TotalChart() {
                         label: {
                             show: true,
                             color: '#000',
-                            fontSize: 10,
+                            fontSize: 9,
                             formatter: (p) => p.value && Number(p.value) > 0 ? String(p.value) : '',
                         },
                     },
@@ -105,6 +123,9 @@ export default function TotalChart() {
                             position: 'top',
                             color: feeColors.total.main,
                             fontWeight: 'bold',
+                            fontSize: 10,
+                            rotate: 45,
+                            offset: [0, -12],
                             formatter: (p) => p.value && Number(p.value) > 0 ? `$${p.value}` : '',
                         },
                     },
@@ -115,24 +136,15 @@ export default function TotalChart() {
         })
     }, [data])
 
-    if (loading) {
-        return (
-            <div className="chart-page">
-                <h1 className="page-title">费用总览</h1>
-                <div className="loading-container">
-                    <div className="loading-spinner" />
-                    <p>加载中...</p>
-                </div>
-            </div>
-        )
-    }
-
     if (error) {
         return (
             <div className="chart-page">
                 <h1 className="page-title">费用总览</h1>
                 <div className="error-container">
                     <p>加载失败: {error.message}</p>
+                    <button onClick={() => window.location.reload()} className="retry-btn">
+                        重试
+                    </button>
                 </div>
             </div>
         )
@@ -144,14 +156,26 @@ export default function TotalChart() {
                 <span className="title-icon">📊</span>
                 费用总览
             </h1>
-            {charts.map(({ year, option, total }) => (
-                <FeeChart
-                    key={year}
-                    option={option}
-                    title={String(year)}
-                    subtitle={`$${total.toFixed(0)}`}
-                />
-            ))}
+
+            <SummaryCard data={data} loading={loading} />
+
+            {loading ? (
+                <>
+                    <ChartSkeleton />
+                    <ChartSkeleton />
+                </>
+            ) : (
+                <Suspense fallback={<ChartSkeleton />}>
+                    {charts.map(({ year, option, total }) => (
+                        <FeeChart
+                            key={year}
+                            option={option}
+                            title={String(year)}
+                            subtitle={`$${total.toFixed(0)}`}
+                        />
+                    ))}
+                </Suspense>
+            )}
         </div>
     )
 }
