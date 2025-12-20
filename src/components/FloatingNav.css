@@ -1,0 +1,74 @@
+.floating-nav {
+  position: fixed;
+  bottom: var(--space-lg);
+  right: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  z-index: 1000;
+}
+
+.nav-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-full);
+  font-size: 1.25rem;
+  text-decoration: none;
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  transition: all var(--transition-base);
+  cursor: pointer;
+}
+
+.nav-btn:hover {
+  transform: scale(1.1);
+  background: var(--glass-bg-hover);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+}
+
+.nav-btn:active {
+  transform: scale(0.95);
+}
+
+.nav-btn.active {
+  box-shadow: 0 0 0 2px var(--color-primary), 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+/* Color-coded backgrounds for active state */
+.water-btn.active {
+  background: linear-gradient(135deg, rgba(51, 178, 240, 0.3), rgba(51, 178, 240, 0.1));
+  box-shadow: 0 0 0 2px var(--color-water), 0 4px 16px rgba(51, 178, 240, 0.3);
+}
+
+.electricity-btn.active {
+  background: linear-gradient(135deg, rgba(255, 200, 0, 0.3), rgba(255, 200, 0, 0.1));
+  box-shadow: 0 0 0 2px var(--color-electricity), 0 4px 16px rgba(255, 200, 0, 0.3);
+}
+
+.gas-btn.active {
+  background: linear-gradient(135deg, rgba(255, 130, 50, 0.3), rgba(255, 130, 50, 0.1));
+  box-shadow: 0 0 0 2px var(--color-gas), 0 4px 16px rgba(255, 130, 50, 0.3);
+}
+
+.total-btn.active {
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.3), rgba(76, 175, 80, 0.1));
+  box-shadow: 0 0 0 2px var(--color-total), 0 4px 16px rgba(76, 175, 80, 0.3);
+}
+
+@media (max-width: 768px) {
+  .floating-nav {
+    bottom: var(--space-md);
+    right: var(--space-md);
+  }
+  
+  .nav-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+}
