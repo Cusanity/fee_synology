@@ -13,6 +13,7 @@ interface MonthStats {
     change: number
     changePercent: number
     missingTypes: FeeType[]
+    breakdown: Record<FeeType, { current: number; previous: number; change: number; changePercent: number }>
 }
 
 interface YearStats {
@@ -35,14 +36,28 @@ export default function SummaryCard({ data, loading }: SummaryCardProps) {
             let current = 0
             let previous = 0
             const missingTypes: FeeType[] = []
+            const breakdown: Record<FeeType, { current: number; previous: number; change: number; changePercent: number }> = {
+                water: { current: 0, previous: 0, change: 0, changePercent: 0 },
+                electricity: { current: 0, previous: 0, change: 0, changePercent: 0 },
+                gas: { current: 0, previous: 0, change: 0, changePercent: 0 },
+            }
 
             for (const type of ['water', 'electricity', 'gas'] as FeeType[]) {
                 const yearData = data[type][currentYear] || Array(12).fill(0)
                 const prevYearData = data[type][currentYear - 1] || Array(12).fill(0)
 
                 const currentValue = yearData[currentMonth] || 0
+                const previousValue = prevYearData[currentMonth] || 0
                 current += currentValue
-                previous += prevYearData[currentMonth] || 0
+                previous += previousValue
+
+                const typeChange = currentValue - previousValue
+                breakdown[type] = {
+                    current: currentValue,
+                    previous: previousValue,
+                    change: typeChange,
+                    changePercent: previousValue > 0 ? (typeChange / previousValue) * 100 : 0,
+                }
 
                 // Track if this type has no data for current month
                 if (currentValue === 0) {
@@ -53,7 +68,7 @@ export default function SummaryCard({ data, loading }: SummaryCardProps) {
             const change = current - previous
             const changePercent = previous > 0 ? (change / previous) * 100 : 0
 
-            return { current, previous, change, changePercent, missingTypes }
+            return { current, previous, change, changePercent, missingTypes, breakdown }
         }
 
         // Calculate YTD totals
@@ -145,25 +160,38 @@ export default function SummaryCard({ data, loading }: SummaryCardProps) {
         )
     }
 
-    const typeLabels: Record<FeeType, string> = {
-        water: '水费',
-        electricity: '电费',
-        gas: '气费',
-    }
-
     return (
         <div className="summary-card">
             <div className="summary-grid">
                 {/* This Month */}
-                <div className="stat-card">
-                    <span className="stat-label">本月支出</span>
-                    <span className="stat-value">${stats.month.current.toFixed(0)}</span>
-                    {renderChange(stats.month.change, stats.month.changePercent)}
-                    {stats.month.missingTypes.length > 0 && (
-                        <span className="stat-warning">
-                            ⚠️ 本月{stats.month.missingTypes.map(t => typeLabels[t]).join('、')}暂无账单
-                        </span>
-                    )}
+                <div className="stat-card breakdown">
+                    <div className="breakdown-header">
+                        <div className="breakdown-summary">
+                            <span className="stat-label">本月支出</span>
+                            <span className="stat-value">${stats.month.current.toFixed(0)}</span>
+                            {renderChange(stats.month.change, stats.month.changePercent)}
+                        </div>
+                    </div>
+                    <div className="breakdown-bars">
+                        <div className="breakdown-item">
+                            <span className="breakdown-icon">💧</span>
+                            <div className="breakdown-bar water" style={{ width: `${stats.month.current > 0 ? (stats.month.breakdown.water.current / stats.month.current) * 100 : 0}%` }} />
+                            <span className="breakdown-value">${stats.month.breakdown.water.current.toFixed(0)}</span>
+                            {renderChange(stats.month.breakdown.water.change, stats.month.breakdown.water.changePercent)}
+                        </div>
+                        <div className="breakdown-item">
+                            <span className="breakdown-icon">⚡</span>
+                            <div className="breakdown-bar electricity" style={{ width: `${stats.month.current > 0 ? (stats.month.breakdown.electricity.current / stats.month.current) * 100 : 0}%` }} />
+                            <span className="breakdown-value">${stats.month.breakdown.electricity.current.toFixed(0)}</span>
+                            {renderChange(stats.month.breakdown.electricity.change, stats.month.breakdown.electricity.changePercent)}
+                        </div>
+                        <div className="breakdown-item">
+                            <span className="breakdown-icon">🔥</span>
+                            <div className="breakdown-bar gas" style={{ width: `${stats.month.current > 0 ? (stats.month.breakdown.gas.current / stats.month.current) * 100 : 0}%` }} />
+                            <span className="breakdown-value">${stats.month.breakdown.gas.current.toFixed(0)}</span>
+                            {renderChange(stats.month.breakdown.gas.change, stats.month.breakdown.gas.changePercent)}
+                        </div>
+                    </div>
                 </div>
 
                 {/* YTD with Category Breakdown */}
