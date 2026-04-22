@@ -14,7 +14,7 @@
     "check-updates": "npm outdated --long"
   },
   "dependencies": {
-    "axios": "^1.13.6",
+    "axios": "^1.15.0",
     "echarts": "^6.0.0",
     "echarts-for-react": "^3.0.6",
     "react": "^19.2.4",
