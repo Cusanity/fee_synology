@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { fetchFeeData, type FeeData, type FeeType } from '../services/api'
 
 interface UseFeeDataResult {
@@ -48,49 +48,69 @@ function saveToCache(data: Record<FeeType, FeeData>): void {
 }
 
 export function useFeeData(): UseFeeDataResult {
-  // Check cache once during initialization
-  const initialCache = useRef(getFromCache())
-  
-  const [data, setData] = useState<Record<FeeType, FeeData>>(
-    initialCache.current || { water: {}, electricity: {}, gas: {} }
-  )
-  const [loading, setLoading] = useState(!initialCache.current)
+  // Check cache once via useState lazy initializer (no refs needed)
+  const [initial] = useState(() => {
+    const cached = getFromCache()
+    return {
+      data: (cached || { water: {}, electricity: {}, gas: {} }) as Record<FeeType, FeeData>,
+      hadCache: cached !== null,
+    }
+  })
+
+  const [data, setData] = useState<Record<FeeType, FeeData>>(initial.data)
+  const [loading, setLoading] = useState(!initial.hadCache)
   const [error, setError] = useState<Error | null>(null)
 
-  const fetchAll = useCallback(async (skipCache = false) => {
-    // If we already have cached data from initialization, skip fetch
-    if (!skipCache && initialCache.current) {
-      initialCache.current = null // Clear so future calls can fetch
-      return
-    }
-
-    setLoading(true)
-    setError(null)
-    try {
-      const [water, electricity, gas] = await Promise.all([
-        fetchFeeData('water'),
-        fetchFeeData('electricity'),
-        fetchFeeData('gas'),
-      ])
-      const newData = { water, electricity, gas }
-      setData(newData)
-      saveToCache(newData)
-    } catch (err) {
-      setError(err instanceof Error ? err : new Error('Failed to fetch data'))
-    } finally {
-      setLoading(false)
-    }
-  }, [])
-
   useEffect(() => {
-    fetchAll()
-  }, [fetchAll])
+    if (initial.hadCache) return
+
+    let cancelled = false
+    const fetchData = async () => {
+      try {
+        const [water, electricity, gas] = await Promise.all([
+          fetchFeeData('water'),
+          fetchFeeData('electricity'),
+          fetchFeeData('gas'),
+        ])
+        if (!cancelled) {
+          const newData = { water, electricity, gas }
+          setData(newData)
+          saveToCache(newData)
+          setLoading(false)
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(err instanceof Error ? err : new Error('Failed to fetch data'))
+          setLoading(false)
+        }
+      }
+    }
+    void fetchData()
+    return () => { cancelled = true }
+  }, [initial.hadCache])
 
   const refetch = useCallback(() => {
     localStorage.removeItem(CACHE_KEY)
-    initialCache.current = null
-    fetchAll(true)
-  }, [fetchAll])
+    setLoading(true)
+    setError(null)
+    const fetchData = async () => {
+      try {
+        const [water, electricity, gas] = await Promise.all([
+          fetchFeeData('water'),
+          fetchFeeData('electricity'),
+          fetchFeeData('gas'),
+        ])
+        const newData = { water, electricity, gas }
+        setData(newData)
+        saveToCache(newData)
+      } catch (err) {
+        setError(err instanceof Error ? err : new Error('Failed to fetch data'))
+      } finally {
+        setLoading(false)
+      }
+    }
+    void fetchData()
+  }, [])
 
   return { data, loading, error, refetch }
 }
